@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>This is the title</title>
+</head>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function fetchTimeline() {
+        $.getJSON('/timeline', function (result) {
+            $('.timeline').empty();
+            for (var i = 0; i < result.length; i++) {
+                var timelineItem = result[i];
+                var tweet = $('<li>' + timelineItem.tweet + ' by ' + timelineItem.author + '</li>');
+                $('.timeline').append(tweet);
+            }
+
+            $.getJSON('/getLikes', function() {
+                //...
+            })
+        });
+    }
+    $(document).ready(function () {
+        fetchTimeline();
+
+        $('form').submit(function (e) {
+            e.preventDefault();
+
+            var tweet = $('.tweet').val();
+            $.ajax({
+                url: "/timeline",
+                data: JSON.stringify({ tweet: tweet }),
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }).done(function () {
+                console.log('DONE');
+                fetchTimeline();
+            });
+
+        });
+    });
+</script>
+
+<body>
+    <h1>Twitter</h1>
+
+    <form>
+        <input class="tweet" type="text" placeholder="Your tweet" />
+        <br />
+        <input type="submit" />
+    </form>
+
+    <h2>Timeline</h2>
+    <ul class="timeline"></ul>
+</body>
+
+</html>
